@@ -1,16 +1,43 @@
 import React, { Component } from 'react';
-import './App.css';
-import Person from './Person/Person'
+import classes from './App.css';
+import Persons from '../components/Persons/Persons'
+import Cockpit from '../components/Cockpit/Cockpit'
 //import Radium, { StyleRoot } from 'radium';
+//import ErrorBoundary from './ErrorBoundary/ErrorBoundary'
 
 class App extends Component {
+
+  constructor(props){
+    super(props);
+    console.log('[App.js] constructor.');
+  }
+
   state = {
     persons : [
       {id: 'qwer001', name: 'AAA', age : 28 },
       {id: 'qwer002', name: 'BBB', age : 21 },
       {id: 'qwer003', name: 'CCC', age : 51 }
     ],
-    showPersons: false
+    showPersons: false,
+    showCockpit: true
+  }
+
+  static getDerivedStateFromProps(props,state){
+    console.log('[App.js] getDerivedStateFromProps.',props,state);
+    return state;
+  }
+
+  componentDidMount(){
+    console.log('[App.js] componentDidMount.');
+  }
+
+  shouldComponentUpdate(nextProps,nextState){
+    console.log('[App.js] shouldComponentUpdate.');
+    return true;
+  }
+
+  componentDidUpdate(){
+    console.log('[App.js] componentDidUpdate')
   }
 
   switchNameHandler = () =>{
@@ -51,74 +78,35 @@ class App extends Component {
   }
 
   render() {
-    const style = {
-      backgroundColor : 'green',
-      color: 'white',
-      font: 'inherit',
-      border: '1px solid blue',
-      padding: '8px',
-      cursor: 'pointer',
-      // ':hover': {
-      //   backgroundColor: 'lightgreen',
-      //   color:'black'
-      // }
-    };
-
+    console.log('[App.js] render.');
     let persons = null;
+    
     if(this.state.showPersons){
       persons = (
-        <div>
-          {
-            this.state.persons.map((person,index) => {
-              return (
-                <Person 
-                  name={person.name} 
-                  age={person.age} 
-                  click={this.deletePersonHandler.bind(this,index)}
-                  key={person.id}
-                  changed={this.nameChangedHandler.bind(this,person.id)}/>
-              )
-            })
-          }
-              {/* <Person 
-                name={this.state.persons[0].name} 
-                age={this.state.persons[0].age} />
-              <Person 
-                name={this.state.persons[1].name} 
-                age={this.state.persons[1].age} 
-                click={this.switchNameHandler}
-                changed={this.nameChangedHandler}>My Hobby : ABC</Person>
-              <Person 
-                name={this.state.persons[2].name} 
-                age={this.state.persons[2].age} /> */}
-          </div>
+        <Persons 
+          persons={this.state.persons}
+          clicked={this.deletePersonHandler}
+          changed={this.nameChangedHandler}/>
       );
-
-      style.backgroundColor = 'red';
-      // style[':hover'] = {
-      //   backgroundColor: 'salmon',
-      //   color: 'black'
-      // }
-    }
-
-    //let classes = ['red','bold'].join(' '); //"red bold"
-    let classes = []
-    if(this.state.persons.length <= 2){
-      classes.push('red');//classes = ['red']
-    }
-    if(this.state.persons.length <=1){
-      classes.push('bold');//classes = ['red','bold']
+      
+      
     }
 
     return (
       //<StyleRoot>
-        <div className="App">
-          <h1>Hello World.</h1>
-          <p className={classes.join(' ')}>This is actually work.</p>
+        <div className={classes.App}>
           <button 
-            style={style}
-            //onClick={this.switchNameHandler}>Switch Name</button>
-            onClick={this.togglePersonHandler}>Switch Name</button>
+            onClick={() => {
+              this.setState({ showCockpit : !this.state.showCockpit});
+            }}>
+            Toggle Cockpit</button>
+          { this.state.showCockpit ? 
+          <Cockpit 
+            title={this.props.appTitle}
+            showPersons = {this.state.showPersons}
+            personsLength = {this.state.persons.length}
+            clicked={this.togglePersonHandler}/>
+          : null}
           {persons}
         </div>
       //</StyleRoot>
